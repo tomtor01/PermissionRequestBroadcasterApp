@@ -1,6 +1,5 @@
 package com.example.noaaweatherapp
 
-import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.icu.util.Calendar
 import android.os.Bundle
@@ -26,21 +25,21 @@ class MainActivity : AppCompatActivity() {
         val fetchButton: Button = findViewById(R.id.fetch_button)
         val resultTextView: TextView = findViewById(R.id.result_text)
 
-        val apiToken = "QEpLxBhqskpsnHzdCFUbhPfgMgEdCaeo"
+
 
         fetchButton.setOnClickListener {
             val city = citySpinner.selectedItem.toString()
             val date = datePicker.text.toString()
 
             if (city.isEmpty() || date.isEmpty()) {
-                Toast.makeText(this, "Please select a city and date.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Koniecznie wybierz miasto i datę.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             val stationId = getStationIdForCity(city)
 
             if (stationId != null) {
-                fetchTemperature(apiToken, stationId, date, resultTextView)
+                fetchTemperature(stationId, date, resultTextView)
             } else {
                 Toast.makeText(this, "No station available for the selected city.", Toast.LENGTH_SHORT).show()
             }
@@ -58,20 +57,27 @@ class MainActivity : AppCompatActivity() {
         return cityToStationMap[city]
     }
 
-    @SuppressLint("SetTextI18n")
-    private fun fetchTemperature(apiToken: String, stationId: String, date: String, resultTextView: TextView) {
+    private fun fetchTemperature(stationId: String, date: String, resultTextView: TextView) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                val apiToken = "QEpLxBhqskpsnHzdCFUbhPfgMgEdCaeo"
                 val client = Client(apiToken)
-                val response = client.getHistoricalTemperature(stationId, date)
+
+                // Fetch TMAX, TMIN, and TAVG data
+                val tmax = client.getHistoricalTemperature(stationId, date, "TMAX")
+                val tmin = client.getHistoricalTemperature(stationId, date, "TMIN")
+                val tavg = client.getHistoricalTemperature(stationId, date, "TAVG")
 
                 withContext(Dispatchers.Main) {
-                    if (response != null) {
-                        val temperature = response.value / 10.0
-                        resultTextView.text = "Data: $date\nTemperatura MAX: $temperature°C"
-                    } else {
-                        resultTextView.text = "Brak danych dla wybranej daty."
+                    // Update the TextView with all temperature values
+                    val resultText = buildString {
+                        append("Data: $date\n")
+                        tmax?.let { append("Temp maksymalna: ${it.value / 10.0}°C\n") }
+                        tmin?.let { append("Temp minimalna: ${it.value / 10.0}°C\n") }
+                        tavg?.let { append("Temp średnia: ${it.value / 10.0}°C\n") }
                     }
+
+                    resultTextView.text = resultText
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -81,20 +87,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private var selectedDate = Calendar.getInstance() // Store the last selected date
+
     fun showDatePicker(view: View) {
-        // Show the date picker dialog
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+        // Use the previously selected date as the default
+        val year = selectedDate.get(Calendar.YEAR)
+        val month = selectedDate.get(Calendar.MONTH)
+        val dayOfMonth = selectedDate.get(Calendar.DAY_OF_MONTH)
 
         val datePickerDialog = DatePickerDialog(
             this, { _, selectedYear, selectedMonth, selectedDay ->
-                // Add 1 to the month since DatePicker uses 0-based months
+                // Update the stored selected date
+                selectedDate.set(selectedYear, selectedMonth, selectedDay)
+
+                // Format the selected date as YYYY-MM-DD
                 val formattedMonth = (selectedMonth + 1).toString().padStart(2, '0') // Pad single digit months
                 val formattedDay = selectedDay.toString().padStart(2, '0') // Pad single digit days
-
-                // Format the date as YYYY-MM-DD
                 val formattedDate = "$selectedYear-$formattedMonth-$formattedDay"
 
                 // Update the TextView with the selected date
@@ -103,6 +111,10 @@ class MainActivity : AppCompatActivity() {
             },
             year, month, dayOfMonth
         )
+        // Restrict the user from selecting future dates
+        datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
+
+        // Show the DatePickerDialog
         datePickerDialog.show()
     }
 }

@@ -9,8 +9,8 @@ class Client(private val apiToken: String) {
     private val baseUrl = "https://www.ncei.noaa.gov/cdo-web/api/v2/data"
     private val client = OkHttpClient()
 
-    fun getHistoricalTemperature(stationId: String, date: String): TemperatureData? {
-        val url = "$baseUrl?datasetid=GHCND&stationid=$stationId&startdate=$date&enddate=$date&datatypeid=TMAX"
+    fun getHistoricalTemperature(stationId: String, date: String, dataType: String): TemperatureData? {
+        val url = "$baseUrl?datasetid=GHCND&stationid=$stationId&startdate=$date&enddate=$date&datatypeid=$dataType"
 
         val request = Request.Builder()
             .url(url)
