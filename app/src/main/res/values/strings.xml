@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">NOAA app</string>
+    <string name="weather">weather</string>
+    <string name="receiver">receiver</string>
     <string-array name="city_array">
         <item>New York</item>
         <item>Los Angeles</item>

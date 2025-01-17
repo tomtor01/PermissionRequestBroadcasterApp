@@ -2,61 +2,28 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/linearLayout"
+    android:id="@+id/weather_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Spinner
-        android:id="@+id/city_spinner"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_host_fragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:defaultNavHost="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:navGraph="@navigation/nav_graph"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout="@layout/fragment_weather" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:entries="@array/city_array"
-        android:minHeight="48dp"
-        android:layout_marginBottom="32dp"
-        app:layout_constraintBottom_toTopOf="@id/date_picker" />
-
-    <TextView
-        android:id="@+id/date_picker"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:background="?attr/selectableItemBackground"
-        android:gravity="center"
-        android:onClick="showDatePicker"
-        android:padding="16dp"
-        android:layout_marginBottom="32dp"
-        android:text="Wybierz datę"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/fetch_button" />
-
-    <Button
-        android:id="@+id/fetch_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Sprawdź"
-        android:layout_marginBottom="36dp"
-        app:layout_constraintBottom_toTopOf="@+id/result_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/result_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:text=""
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/guideline3" />
-
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="400dp" />
+        app:menu="@menu/navigation_menu"
+        app:labelVisibilityMode="unlabeled"
+        android:background="@color/material_dynamic_neutral_variant20"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

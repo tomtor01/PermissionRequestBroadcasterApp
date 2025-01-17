@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_weather">
+
+    <fragment
+        android:id="@+id/nav_weather"
+        android:name="com.example.noaaweatherapp.WeatherFragment"
+        android:label="Pogoda" />
+
+    <fragment
+        android:id="@+id/nav_receiver"
+        android:name="com.example.noaaweatherapp.ReceiverFragment"
+        android:label="Contacts" />
+
+</navigation>
